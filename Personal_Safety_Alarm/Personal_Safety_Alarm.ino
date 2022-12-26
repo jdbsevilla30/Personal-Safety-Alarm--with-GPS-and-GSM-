@@ -35,42 +35,49 @@ void setup() {
 }
 
 void loop() {
-  handleReset();
+  handleCondition();
   handleStreetButton();
   handleDisasterButton();
-  handleCondition();
   handleLimitSwitch();
+  handleReset();
+}
+
+void streetCase() {
+  switch (buttonPressCountStreet) {
+    case 1:
+      Serial.println("Abduction Happens");
+      break;
+    case 2:
+      Serial.println("Mugging Happens");
+      break;
+    case 3:
+      Serial.println("Harrasment Happens");
+      break;
+  }
+  buttonPressCountStreet = 0;
+}
+void disasterCase() {
+  switch (buttonPressCountDisaster) {
+    case 1:
+      Serial.println("Flood and Landslide happens");
+      break;
+    case 2:
+      Serial.println("Mugging Happens");
+      break;
+    case 3:
+      Serial.println("Fire indicent happens");
+      break;
+  }
+  buttonPressCountDisaster = 0;
 }
 
 void handleCondition() {
   currentTime = millis();
   if (currentTime - pressStartTime > 5000) {
     if (buttonPressCountStreet > 0) {
-      switch (buttonPressCountStreet) {
-        case 1:
-          Serial.println("Fire");
-          break;
-        case 2:
-          Serial.println("Water");
-          break;
-        case 3:
-          Serial.println("Earth");
-          break;
-      }
-      buttonPressCountStreet = 0;
+      streetCase();
     } else if (buttonPressCountDisaster > 0) {
-      switch (buttonPressCountDisaster) {
-        case 1:
-          Serial.println("Harrasment");
-          break;
-        case 2:
-          Serial.println("Theft");
-          break;
-        case 3:
-          Serial.println("Abduction");
-          break;
-      }
-      buttonPressCountDisaster = 0;
+      disasterCase();
     }
   }
 }
@@ -123,13 +130,10 @@ void handleLimitSwitch() {
     if (reading != limitSwitchState) {
       limitSwitchState = reading;
       if (limitSwitchState == HIGH) {
-        pressStartTime = millis();
         Serial.println("Intrusion");
       }
       else {
-     
-           limitSwitchCounter++;
-        Serial.println(limitSwitchCounter);
+
       }
     }
   }
