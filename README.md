@@ -1,5 +1,7 @@
 # Personal-Safety-Alarm--with-GPS-and-GSM-
 
+Please download this for better readability! 
+
 This project is a customized personal safety alarm, and it consist of Neo6M GPS Module, Sim900a GSM Module, two buttons, and a limit switch. As per my client's requests,
 each button and the limit switch has specific designated message per action. 
 
@@ -71,5 +73,8 @@ Limit Switch INPUT_PULLUP
 GND - Closed
 NO - D4
 
+Kindly install the TinyGPSPlush library (credits to https://github.com/mikalhart for this wonderful library!) from Arduino's Library Manager. Refer to this link if you have no idea how to install libraries using library manager. Please note that internet connection is required.
 
+https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#:~:text=Using%20the%20Library%20Manager&text=Open%20the%20IDE%20and%20click,installed%20or%20ready%20for%20installation. 
 
+Please type "TinyGPSPlus" (without the quote, and install the latest version). 
