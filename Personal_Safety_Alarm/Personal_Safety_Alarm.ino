@@ -187,7 +187,7 @@ void handleCondition()
     {
       disasterCase();
     }
-    else if (intrusionCount > 0)
+    else if (intrusionCount > 0 && intrusionCount < 2)
     {
       intrusionCase();
     }
@@ -255,11 +255,11 @@ void handleLimitSwitch()
     if (reading != limitSwitchState)
     {
       limitSwitchState = reading;
-      if (limitSwitchState == HIGH && intrusionCount < 5)
+      if (limitSwitchState == HIGH)
       {
         intrusionCount++;
       }
-      else
+      else if(limitSwitchState == LOW)
       {
         intrusionCount = 0;
       }
