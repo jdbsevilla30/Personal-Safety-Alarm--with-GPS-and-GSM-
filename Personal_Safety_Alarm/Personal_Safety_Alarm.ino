@@ -1,5 +1,6 @@
 /*GPS Module library*/
 #include <TinyGPSPlus.h>
+
 TinyGPSPlus gps;
 
 /*Assign Serial1 as gpsModule*/
@@ -40,18 +41,20 @@ unsigned long pressStartTime;
 String streetDanger = "";
 String disasterDanger = "";
 
-int gsmLocation = 0;
-
 int intrusionCount = 0;
 
+bool isFirstBoot = true;
+
+String mobileNumber = "9275156419";
+
 void setup() {
-  Serial.begin(115200);
+
   pinMode(streetButtonPin, INPUT_PULLUP);
   pinMode(disasterButtonPin, INPUT_PULLUP);
   pinMode(limitSwitchPin, INPUT_PULLUP);
   gpsModule.begin(9600);
   sim900.begin(115200);
-  introMessage();
+  introMessage(); //uncomment this if you don't want introductory message
 }
 
 void loop() {
@@ -60,79 +63,82 @@ void loop() {
   handleDisasterButton();
   handleLimitSwitch();
   handleReset();
+  gpsCheck();
 
+}
+
+void gpsCheck()
+{
   while (gpsModule.available() > 0)
-    if (gps.encode(gpsModule.read()) && gsmLocation <= 1)
-    {
-
-      gsmLocation++;
+    if (gps.encode(gpsModule.read())) {
     }
 }
+
+void introMessage() { //comment this function if you don't want this to show
+  sim900.println("AT+CMGF=1");
+  delay(1000);
+  sim900.print("AT+CMGS=\"+63");
+  sim900.print(mobileNumber);
+  sim900.println("\"\r");
+  delay(1000);
+  sim900.print(F("Receiving this text means that the device works! \n Introductory message lang po ito."));
+  delay(100);
+  sim900.println((char) 26); // ASCII code of CTRL+Z
+  delay(1000);
+}
+
+
 
 void streetCase() {
   switch (buttonPressCountStreet) {
     case 1:
-      Serial.println("Abduction Happens");
       streetDanger = "There is an abduction here in my area:";
       break;
     case 2:
-      Serial.println("Mugging Happens");
       streetDanger = "There's a burglary here in my area:";
       break;
     case 3:
-      Serial.println("Harrasment Happens");
       streetDanger = "Someone got harrased in my area:";
       break;
   }
-  sendDangerMessage(streetDanger);
+  sendMessage(streetDanger);
   buttonPressCountStreet = 0;
   streetDanger = "";
 }
 void disasterCase() {
   switch (buttonPressCountDisaster) {
     case 1:
-      Serial.println("Flood and Landslide happens");
       disasterDanger = "Flood and Landslide here";
       break;
     case 2:
-      Serial.println("Earthquake Happens");
       disasterDanger = "Earthquake here";
       break;
     case 3:
-      Serial.println("Fire indicent happens");
       disasterDanger = "Fire here";
       break;
   }
-  sendDangerMessage(disasterDanger);
+  sendMessage(disasterDanger);
   buttonPressCountDisaster = 0;
   disasterDanger = "";
 
 }
 
 void intrusionCase() {
-  switch (intrusionCount)
+  if (intrusionCount > 0)
   {
-    case 0:
-      Serial.println("no intrusion");
-      break;
-    default:
-      Serial.println("Intrusion");
-      sendDangerMessage("Intrusion");
-
+    sendMessage("Intrusion within the device detected");
   }
-  buttonPressCountStreet = 0;
 }
 
 void handleCondition() {
+  isFirstBoot = false;
   currentTime = millis();
   if (currentTime - pressStartTime > 5000) {
     if (buttonPressCountStreet > 0) {
       streetCase();
     } else if (buttonPressCountDisaster > 0) {
       disasterCase();
-    }
-    else if (intrusionCount > 0) {
-      Serial.println(intrusionCount);
+    } else if (intrusionCount > 0) {
       intrusionCase();
     }
   }
@@ -150,7 +156,6 @@ void handleStreetButton() {
       if (streetButtonState == LOW) {
         pressStartTime = millis();
         buttonPressCountStreet++;
-        Serial.println(buttonPressCountStreet);
       }
     }
   }
@@ -169,7 +174,6 @@ void handleDisasterButton() {
       if (disasterButtonState == LOW) {
         pressStartTime = millis();
         buttonPressCountDisaster++;
-        Serial.println(buttonPressCountDisaster);
       }
     }
   }
@@ -185,13 +189,10 @@ void handleLimitSwitch() {
   if ((millis() - lastLimitSwitchDebounceTime) > debounceDelay) {
     if (reading != limitSwitchState) {
       limitSwitchState = reading;
-      if (limitSwitchState == HIGH) {
-        //        Serial.println("Intrusion");
-        //        sendDangerMessage("");
+      if (limitSwitchState == HIGH && intrusionCount < 5) {
         intrusionCount++;
-      }
-      else {
-
+      } else {
+        intrusionCount = 0;
       }
     }
   }
@@ -206,55 +207,23 @@ void handleReset() {
   }
 }
 
-void displayInfo()
-{
-  if (gps.location.isValid())
-  {
-    Serial.print(gps.location.lat(), 6);
-    Serial.print(F(","));
-    Serial.print(gps.location.lng(), 6);
-    //    sendCoordinates();
-  }
-  else
-  {
-    Serial.print(F("INVALID"));
-  }
-  Serial.println("");
-}
-
-void sendDangerMessage(String dangerMessage)
-{
-  Serial2.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
-  delay(1000);  // Delay of 1000 milli seconds or 1 second
-  Serial2.println("AT+CMGS=\"+639275156419\"\r"); // Replace x with mobile number
+void sendMessage(String dangerMessage) {
+  sim900.println("AT+CMGF=1"); //Sets the GSM Module in Text Mode
   delay(1000);
-  Serial2.print("Hi! This is a test message. Don't get alarmed. <3 \n" );
-  Serial2.print(dangerMessage);
-  Serial2.print("Link to my location: \n");
-
-  if (gps.location.isValid())
-  {
-    Serial2.print(gps.location.lat(), 6);
-    Serial2.print(F(","));
-    Serial2.print(gps.location.lng(), 6);
-  }
-  else
-  {
-    Serial2.print(F("INVALID LOCATION"));
+  sim900.println("AT+CMGS=\"+639275156419\"\r");
+  delay(1000);
+  sim900.print(F("Hi! This is a test message. Don't get alarmed. <3 \n")); //modify this
+  sim900.print(dangerMessage);
+  sim900.print(F("Link to my location: \n")); //and this if you want to add/change the SMS message
+  // sim900.println(F("https://www.google.com/maps/place/")); //uncomment this to get actual link
+  if (gps.location.isValid()) {
+    sim900.print(gps.location.lat(), 6);
+    sim900.print(F(","));
+    sim900.print(gps.location.lng(), 6);
+  } else {
+    sim900.print(F("INVALID LOCATION")); //will be sent if there's no valid GPS data
   }
   delay(100);
-  Serial2.println((char)26);// ASCII code of CTRL+Z
-  delay(1000);
-}
-
-void introMessage()
-{
-  Serial2.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
-  delay(1000);  // Delay of 1000 milli seconds or 1 second
-  Serial2.println("AT+CMGS=\"+639275156419\"\r"); // Replace x with mobile number
-  delay(1000);
-  Serial2.print("Receiving this text means that the device works!" );
-  delay(100);
-  Serial2.println((char)26);// ASCII code of CTRL+Z
+  sim900.println((char) 26); // ASCII code of CTRL+Z
   delay(1000);
 }
