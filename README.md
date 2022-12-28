@@ -78,3 +78,9 @@ Kindly install the TinyGPSPlush library (credits to https://github.com/mikalhart
 https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries#:~:text=Using%20the%20Library%20Manager&text=Open%20the%20IDE%20and%20click,installed%20or%20ready%20for%20installation. 
 
 Please type "TinyGPSPlus" (without the quote, and install the latest version). 
+
+You may also install the library as a zip (included in the repository) if you prefer it that way.
+
+Here's the library documentation for your reference:
+
+https://github.com/mikalhart/TinyGPSPlus
