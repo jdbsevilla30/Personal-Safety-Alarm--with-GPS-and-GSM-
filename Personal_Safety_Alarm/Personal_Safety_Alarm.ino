@@ -1,4 +1,4 @@
-/*GPS Module library*/ 
+/*GPS Module library*/
 #include <TinyGPSPlus.h>
 TinyGPSPlus gps;
 
@@ -59,7 +59,7 @@ String disasterScenarioTwo = "Fire \n";
 String disasterScenarioThree = "Earthquake \n";
 
 /*device intrusion scenario*/
-String intrusionMessage = "Your device is either faulty or hi-jacked. \n";
+String intrusionMessage = "Your device is either faulty or hi-jacked";
 
 void sendMessage(String dangerMessage)
 {
@@ -105,6 +105,7 @@ void setup()
   sim900.begin(115200);
   sendMessage(introMessage);  //uncomment this if you don't want introductory message
   //sendMessage("YOUR TEXT HERE");  //or you can comment above and type your text manually here
+  Serial.begin(9600);
 }
 
 void loop()
