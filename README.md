@@ -3,7 +3,7 @@
 Please download this for better readability! 
 
 This project is a customized personal safety alarm, and it consist of Neo6M GPS Module, Sim900a GSM Module, two buttons, and a limit switch. As per my client's requests,
-each button and the limit switch has specific designated message per action. 
+each button and the limit switch has specific designated message per action. This uses Arduino Mega as the microcontroller.  
 
 mobileNumber is the number that we'll be using as the receiver of the text messages. Be sure to use a provider that doesn't block links.
 String mobileNumber = "9275156419";  
