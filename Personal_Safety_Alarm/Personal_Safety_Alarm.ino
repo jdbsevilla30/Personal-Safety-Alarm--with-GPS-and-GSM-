@@ -13,7 +13,7 @@ TinyGPSPlus gps;
   can receive links, as globe has blocked them
 */
 bool isFirstBoot = true;
-String mobileNumber = "9275156419";  //always remember, starts with 9, and not 0
+String mobileNumber = "9855586637";  //always remember, starts with 9, and not 0
 String introMessage = "Hi! This is a test message. \n Receiving this message means that the device is working, and is booted for the first time.";
 
 /*Street button*/
@@ -78,7 +78,7 @@ void sendMessage(String dangerMessage)
     sim900.print(F("There is a \n")); //modify this
     sim900.print(dangerMessage);
     sim900.print(F("Link to my location: \n")); //and this if you want to add/change the SMS message
-    // sim900.print(F("https://www.google.com/maps/place/")); //uncomment this to get actual link
+    sim900.print(F("https://www.google.com/maps/place/")); //uncomment this to get actual link
     if (gps.location.isValid())
     {
       sim900.print(gps.location.lat(), 6);
@@ -259,7 +259,7 @@ void handleLimitSwitch()
       {
         intrusionCount++;
       }
-      else if(limitSwitchState == LOW)
+      else if (limitSwitchState == LOW)
       {
         intrusionCount = 0;
       }
